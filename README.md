@@ -5,10 +5,10 @@
 A starting point for Neovim that is:
 
 * Small
-* Single-file
-* Completely Documented
 
 **NOT** a Neovim distribution, but instead a starting point for your configuration.
+
+**This is a modified version of the original kickstart, built to suit my own needs.**
 
 ## Installation
 
