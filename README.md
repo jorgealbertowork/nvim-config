@@ -1,8 +1,10 @@
 # kickstart.nvim
 
-## Introduction
+## **This is a modified version of the original kickstart, built to suit my own needs.**
 
-**This is a modified version of the original kickstart, built to suit my own needs.**
+Look up the _init.lua_ file and the lua/plugins directory for modifications and plugin additions. 
+
+If you want the original kickstart: https://github.com/nvim-lua/kickstart.nvim
 
 ## Installation
 
