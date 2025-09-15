@@ -687,7 +687,8 @@ require('lazy').setup({
 -- Load the colorscheme here.
 vim.cmd.colorscheme 'rose-pine-main'
 
--- Load keymaps file
+-- Load auxiliary files
 require 'keymaps'
 require 'autocmds'
+
 -- vim: ts=2 sts=2 sw=2 et
