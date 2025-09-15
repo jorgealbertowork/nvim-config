@@ -21,8 +21,8 @@ opt.undofile = true -- Enables separate undofile
 opt.updatetime = 250 -- Decrease update time
 
 -- Manage how certain whitespace characters are shown
-opt.list = true
-opt.listchars = { tab = '» ', trail = '·', nbsp = '␣' }
+-- opt.list = true
+-- opt.listchars = { tab = '» ', trail = '·', nbsp = '␣' }
 
 -- Configure how new splits should be opened
 opt.splitright = true
@@ -107,6 +107,21 @@ map('v', '>', '>gv', { desc = 'Indent right and reselect' })
 -- Buffer actions
 map('n', '<leader>#', '<cmd>b#<cr>', { desc = 'Last viewed buffer' })
 map('n', '<leader>q', '<cmd>bd!<cr>', { desc = 'Close buffer' })
+
+-- Disable arrow keys in normal mode
+map('n', '<left>', '<cmd>echo <CR>')
+map('n', '<right>', '<cmd>echo <CR>')
+map('n', '<up>', '<cmd>echo <CR>')
+map('n', '<down>', '<cmd>echo <CR>')
+
+-- Highlight all occurrences of the word under the cursor
+vim.keymap.set('n', '<leader>*', function()
+  local word = vim.fn.expand '<cword>'
+  local pattern = '\\<' .. word .. '\\>'
+  vim.fn.setreg('/', pattern)
+  -- Trigger highlight by searching and immediately going back
+  vim.cmd 'normal! nN'
+end, { noremap = true, silent = true })
 
 -- ==========================================================================================================
 
@@ -496,7 +511,10 @@ require('lazy').setup({
       end,
       formatters_by_ft = {
         lua = { 'stylua' },
+        css = { 'prettierd', 'prettier', stop_after_first = true },
+        html = { 'prettierd', 'prettier', stop_after_first = true },
         javascript = { 'prettierd', 'prettier', stop_after_first = true },
+        typescript = { 'prettierd', 'prettier', stop_after_first = true },
       },
     },
   },
@@ -622,6 +640,16 @@ require('lazy').setup({
       },
 
       indent = { enable = true, disable = { 'ruby' } },
+
+      incremental_selection = {
+        enable = true,
+        keymaps = {
+          init_selection = '<enter>',
+          scope_incremental = false,
+          node_incremental = '<enter>',
+          node_decremental = '<backspace>',
+        },
+      },
     },
   },
 
@@ -659,4 +687,7 @@ require('lazy').setup({
 -- Load the colorscheme here.
 vim.cmd.colorscheme 'rose-pine-main'
 
+-- Load keymaps file
+require 'keymaps'
+require 'autocmds'
 -- vim: ts=2 sts=2 sw=2 et
