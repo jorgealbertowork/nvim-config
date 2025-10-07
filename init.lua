@@ -9,13 +9,14 @@ local opt = vim.opt
 
 opt.breakindent = true -- Manages commented lines indentation
 opt.confirm = true -- Ask for confirmation before closing unsaved buffer
-opt.cursorline = true -- Highlight the cursor line
-opt.inccommand = 'split' -- Substitutions live preview
+opt.inccommand = 'split' -- Substitutions live-preview
+opt.laststatus = 3 -- Use a single statusline per instance
 opt.mouse = 'a' -- Enables mouse
 opt.number = true -- Enables line numbers
-opt.scrolloff = 10 -- Cursor line above/below padding
+opt.scrolloff = 15 -- Cursor line above/below padding
 opt.showmode = false -- Hides the mode line (modes displayed on statusline)
 opt.signcolumn = 'yes' -- Signcolumn always visible
+opt.termguicolors = true -- Enable 24 bit color
 opt.timeoutlen = 300 -- Decrease mapped sequence wait time
 opt.undofile = true -- Enables separate undofile
 opt.updatetime = 250 -- Decrease update time
@@ -40,82 +41,84 @@ end)
 -- Sets the default undo directory for undo files
 opt.undodir = os.getenv 'HOME' .. '/.nvim/undodir'
 
+-- Set a blinking cursor
+opt.guicursor = 'n-v-c:block,i:ver25-Cursor/lCursor-blinkon600-blinkoff600-blinkwait0'
+
 -- ==========================================================================================================
 
 -- INFO: [[ Basic Keymaps ]]
-local map = vim.keymap.set
+local keymap = vim.keymap.set
 
 -- Clear highlights on search when pressing <Esc> in normal mode
-map('n', '<Esc>', '<cmd>nohlsearch<CR>')
+keymap('n', '<Esc>', '<cmd>nohlsearch<CR>')
 
 -- Diagnostic keymaps
-map('n', '<leader>q', vim.diagnostic.setloclist, { desc = 'Open diagnostic [Q]uickfix list' })
+keymap('n', '<leader>q', vim.diagnostic.setloclist, { desc = 'Open diagnostic [Q]uickfix list' })
 
 -- Exit terminal mode in the builtin terminal with a shortcut that is a bit easier
-map('t', '<Esc><Esc>', '<C-\\><C-n>', { desc = 'Exit terminal mode' })
+keymap('t', '<Esc><Esc>', '<C-\\><C-n>', { desc = 'Exit terminal mode' })
 
 -- Keybinds to make split navigation easier.
-map('n', '<C-h>', '<C-w><C-h>', { desc = 'Move focus to the left window' })
-map('n', '<C-l>', '<C-w><C-l>', { desc = 'Move focus to the right window' })
-map('n', '<C-j>', '<C-w><C-j>', { desc = 'Move focus to the lower window' })
-map('n', '<C-k>', '<C-w><C-k>', { desc = 'Move focus to the upper window' })
+keymap('n', '<C-h>', '<C-w><C-h>', { desc = 'Move focus to the left window' })
+keymap('n', '<C-l>', '<C-w><C-l>', { desc = 'Move focus to the right window' })
+keymap('n', '<C-j>', '<C-w><C-j>', { desc = 'Move focus to the lower window' })
+keymap('n', '<C-k>', '<C-w><C-k>', { desc = 'Move focus to the upper window' })
 
 -- Keybinds to make moving windows easier
-map('n', '<C-S-h>', '<C-w>H', { desc = 'Move window to the left' })
-map('n', '<C-S-l>', '<C-w>L', { desc = 'Move window to the right' })
-map('n', '<C-S-j>', '<C-w>J', { desc = 'Move window to the lower' })
-map('n', '<C-S-k>', '<C-w>K', { desc = 'Move window to the upper' })
+keymap('n', '<C-S-h>', '<C-w>H', { desc = 'Move window to the left' })
+keymap('n', '<C-S-l>', '<C-w>L', { desc = 'Move window to the right' })
+keymap('n', '<C-S-j>', '<C-w>J', { desc = 'Move window to the lower' })
+keymap('n', '<C-S-k>', '<C-w>K', { desc = 'Move window to the upper' })
 
 -- Keybinds for to make resizing windows easier
-map('n', '<C-Up>', '<cmd>resize +2<cr>', { desc = 'Increase window height' })
-map('n', '<C-Down>', '<cmd>resize -2<cr>', { desc = 'Decrease window height' })
-map('n', '<C-Left>', '<cmd>vertical resize -2<cr>', { desc = 'Decrease window width' })
-map('n', '<C-Right>', '<cmd>vertical resize +2<cr>', { desc = 'Increase window width' })
+keymap('n', '<C-Up>', '<cmd>resize +2<cr>', { desc = 'Increase window height' })
+keymap('n', '<C-Down>', '<cmd>resize -2<cr>', { desc = 'Decrease window height' })
+keymap('n', '<C-Left>', '<cmd>vertical resize -2<cr>', { desc = 'Decrease window width' })
+keymap('n', '<C-Right>', '<cmd>vertical resize +2<cr>', { desc = 'Increase window width' })
 
 -- General management
-map({ 'i', 'x', 'n', 's' }, '<C-q>', '<cmd>q<cr>', { desc = 'Close editor' })
-map({ 'i', 'x', 'n', 's' }, '<C-s>', '<cmd>w<cr><esc>', { desc = 'Save file' })
+keymap({ 'i', 'x', 'n', 's' }, '<C-s>', '<cmd>w<cr><esc>', { desc = 'Save file' })
+keymap({ 'i', 'x', 'n', 's' }, '<C-q>', '<cmd>lua MiniBufremove.delete()<cr><esc>', { desc = 'Close buffer' })
 
 -- Better up/down
-map({ 'n', 'x' }, 'j', "v:count == 0 ? 'gj' : 'j'", { desc = 'Down', expr = true, silent = true })
-map({ 'n', 'x' }, 'k', "v:count == 0 ? 'gk' : 'k'", { desc = 'Up', expr = true, silent = true })
+keymap({ 'n', 'x' }, 'j', "v:count == 0 ? 'gj' : 'j'", { desc = 'Down', expr = true, silent = true })
+keymap({ 'n', 'x' }, 'k', "v:count == 0 ? 'gk' : 'k'", { desc = 'Up', expr = true, silent = true })
 
 -- Better paste behavior on visual modes
-map({ 'v', 'x' }, 'p', '"_dP')
-map({ 'v', 'x' }, '<leader>p', 'dP', { desc = 'Regular paste/yank' })
+keymap({ 'v', 'x' }, 'p', '"_dP')
+keymap({ 'v', 'x' }, '<leader>p', 'dP', { desc = 'Regular paste/yank' })
 
 -- Center cursor when navigating up or down
-map('n', '<C-d>', '<C-d>zz', { desc = 'Scroll down' })
-map('n', '<C-u>', '<C-u>zz', { desc = 'Scroll up' })
-map('n', 'gg', 'ggzz', { desc = 'Jumps to [line number] and centers line' })
-map('n', 'G', 'Gzz', { desc = 'Jumps to [line number] and centers line' })
-map('n', 'n', 'nzzzv', { desc = 'Next search result (centered)' })
-map('n', 'N', 'Nzzzv', { desc = 'Previous search result (centered)' })
+keymap('n', '<C-d>', '<C-d>zz', { desc = 'Scroll down' })
+keymap('n', '<C-u>', '<C-u>zz', { desc = 'Scroll up' })
+keymap('n', 'gg', 'ggzz', { desc = 'Jumps to [line number] and centers line' })
+keymap('n', 'G', "v:count == 0 ? 'Gzz' : 'Gzt'", { desc = 'Jumps to [line_number]', expr = true, silent = true })
+keymap('n', 'n', 'nzzzv', { desc = 'Next search result (centered)' })
+keymap('n', 'N', 'Nzzzv', { desc = 'Previous search result (centered)' })
 
 -- Move lines up/down
-map('i', '<A-j>', '<esc>:move .+1<cr>==gi', { desc = 'Move line down' })
-map('i', '<A-k>', '<esc>:move .-2<cr>==gi', { desc = 'Move line up' })
-map('n', '<A-j>', ':move .+1<cr>==', { desc = 'Move line down' })
-map('n', '<A-k>', ':move .-2<cr>==', { desc = 'Move line up' })
-map('v', '<A-j>', ":move '>+1<cr>gv=gv", { desc = 'Move selection down' })
-map('v', '<A-k>', ":move '<-2<cr>gv=gv", { desc = 'Move selection up' })
+keymap('i', '<A-j>', '<esc>:move .+1<cr>==gi', { desc = 'Move line down' })
+keymap('i', '<A-k>', '<esc>:move .-2<cr>==gi', { desc = 'Move line up' })
+keymap('n', '<A-j>', ':move .+1<cr>==', { desc = 'Move line down' })
+keymap('n', '<A-k>', ':move .-2<cr>==', { desc = 'Move line up' })
+keymap('v', '<A-j>', ":move '>+1<cr>gv=gv", { desc = 'Move selection down' })
+keymap('v', '<A-k>', ":move '<-2<cr>gv=gv", { desc = 'Move selection up' })
 
 -- Better indenting in visual mode
-map('v', '<', '<gv', { desc = 'Indent left and reselect' })
-map('v', '>', '>gv', { desc = 'Indent right and reselect' })
+keymap('v', '<', '<gv', { desc = 'Indent left and reselect' })
+keymap('v', '>', '>gv', { desc = 'Indent right and reselect' })
 
 -- Buffer actions
-map('n', '<leader>#', '<cmd>b#<cr>', { desc = 'Last viewed buffer' })
-map('n', '<leader>q', '<cmd>bd!<cr>', { desc = 'Close buffer' })
+keymap('n', '<leader>#', '<cmd>b#<cr>', { desc = 'Last viewed buffer' })
 
 -- Disable arrow keys in normal mode
-map('n', '<left>', '<cmd>echo <CR>')
-map('n', '<right>', '<cmd>echo <CR>')
-map('n', '<up>', '<cmd>echo <CR>')
-map('n', '<down>', '<cmd>echo <CR>')
+keymap('n', '<left>', '<cmd>echo <CR>')
+keymap('n', '<right>', '<cmd>echo <CR>')
+keymap('n', '<up>', '<cmd>echo <CR>')
+keymap('n', '<down>', '<cmd>echo <CR>')
 
 -- Highlight all occurrences of the word under the cursor
-vim.keymap.set('n', '<leader>*', function()
+keymap('n', '<leader>*', function()
   local word = vim.fn.expand '<cword>'
   local pattern = '\\<' .. word .. '\\>'
   vim.fn.setreg('/', pattern)
@@ -147,6 +150,30 @@ vim.api.nvim_create_autocmd('TextYankPost', {
   group = vim.api.nvim_create_augroup('kickstart-highlight-yank', { clear = true }),
   callback = function()
     vim.hl.on_yank()
+  end,
+})
+
+-- Sets formatoptions to stop auto comment continuation
+vim.api.nvim_create_autocmd('FileType', {
+  pattern = '*',
+  callback = function()
+    vim.opt.formatoptions:remove { 'r', 'o' }
+  end,
+})
+
+-- Highlight cursorline on window enter
+vim.api.nvim_create_autocmd({ 'WinEnter', 'BufEnter' }, {
+  pattern = '*',
+  callback = function()
+    vim.wo.cursorline = true
+  end,
+})
+
+-- Hides cursorline on window leave
+vim.api.nvim_create_autocmd({ 'WinLeave', 'BufLeave' }, {
+  pattern = '*',
+  callback = function()
+    vim.wo.cursorline = false
   end,
 })
 
@@ -593,7 +620,7 @@ require('lazy').setup({
       ---@diagnostic disable-next-line: missing-fields
       require('tokyonight').setup {
         styles = {
-          comments = { italic = false }, -- Disable italics in comments
+          comments = { italic = true }, -- Disable italics in comments
         },
       }
 
@@ -602,13 +629,20 @@ require('lazy').setup({
     end,
   },
 
-  -- Highlight todo, notes, etc in comments
-  { 'folke/todo-comments.nvim', event = 'VimEnter', dependencies = { 'nvim-lua/plenary.nvim' }, opts = { signs = false } },
+  { -- Highlight todo, notes, etc in comments
+    'folke/todo-comments.nvim',
+    event = 'VimEnter',
+    dependencies = {
+      'nvim-lua/plenary.nvim',
+    },
+    opts = { signs = false },
+  },
 
   { -- Collection of various small independent plugins/modules
     'echasnovski/mini.nvim',
     config = function()
       require('mini.ai').setup { n_lines = 500 }
+      require('mini.bufremove').setup()
       require('mini.files').setup()
       require('mini.icons').setup()
       require('mini.jump').setup()
@@ -618,8 +652,10 @@ require('lazy').setup({
       statusline.setup { use_icons = vim.g.have_nerd_font }
       ---@diagnostic disable-next-line: duplicate-set-field
       statusline.section_location = function()
-        return '%2l:%-2v'
+        return '%2l/%L:%-2v'
       end
+
+      MiniIcons.mock_nvim_web_devicons()
     end,
   },
 
